@@ -50,9 +50,9 @@ fetch('http://localhost:3000/api/products/'+ leId)
 
 
    let imageDOM = `<img src="${unCanape.imageUrl}" alt="Photographie d'un canapé">`;
-   let titleDOM = `${unCanape.name}`;
-   let priceDOM = `${unCanape.price}`;
-   let descriptionDOM = `${unCanape.description}`;
+   let titleDOM = unCanape.name;
+   let priceDOM = unCanape.price;
+   let descriptionDOM = unCanape.description;
   
    
 
@@ -66,119 +66,133 @@ descriptionSelector.innerHTML = descriptionDOM;
 
 
 
-let panier = [];
-let myJSON = JSON.stringify(panier);
+const addBasket = () => {
 
+  let button = document.querySelector('#addToCart');
+  button.addEventListener('click', () => {
 
-
-let button = document.querySelector('#addToCart');
-
-button.addEventListener('click', () => {
-  
-  
-  localStorage.setItem('id', unCanape._id);
-  
-  if(localStorage.getItem('id')){
-    panier.push(unCanape._id);
-  };
-
-  //---------------------------------
-
-  localStorage.setItem('couleur', (couleursSelector).value);
-  
-  if(localStorage.getItem('couleur')){
-    panier.push((couleursSelector).value);
-  };
-
-  //-----------------------------------
-
-  let quantitéSelector = document.querySelector('#quantity');
-  
-  localStorage.setItem('quantité', (quantitéSelector).value);
-  
-  if(localStorage.getItem('quantité')){
-    panier.push((quantitéSelector).value);
-  };
-
-  function sauvegardePanier(){
-  localStorage.setItem('addtocart', JSON.stringify(panier)); 
-//let ajoutAuPanier = JSON.parse(panier.getItem('addtocart')); 
-  };
-
- 
-
-  sauvegardePanier();
-  
-/*
-function savePanier(panier){
-  localStorage.setItem('panier', JSON.stringify(panier));
-}
-
-function getPanier(){
-return JSON.parse(localStorage.getItem(panier));
-}
-
-function ajoutAuPanier(id, couleur, quantité){
-panier.push(id, couleur, quantité);
-savePanier(panier);
-}
-
-ajoutAuPanier(unCanape._id);
-
-
-
-/*
-
-let button = document.querySelector('#addToCart');
-
-button.addEventListener('click', () => {
+    let quantitéSelector = document.querySelector('#quantity');
 
   
-    let panierLocalStorage = [];
   
+   
+let localCart = JSON.parse(localStorage.getItem('cart'));
+
+    const currentProduct = {
+      id : unCanape._id, 
+      color : couleursSelector.value,
+      quantity : quantitéSelector.value
+    }
+
+    if(localCart == null){
+      localCart = [];
+      localCart.push(currentProduct);
+      console.log(localCart);
+      localStorage.setItem('cart', JSON.stringify(localCart));
+    } 
+
+    else 
+    {
+
+      localCart.push(currentProduct);
+      console.log(localCart);
+      localStorage.setItem('cart', JSON.stringify(localCart));
+
+     
+    }
+    
+         quantitéSelector.addEventListener('change', (event) =>  {
+
+
+          function updateQuantity (productID, quantity) {
+            for (let product of localCart) {
+              if (product.id == canape._id && product.color == couleursSelector.value){
+                product.quantity = quantitéSelector.value;
+              }
+            }
+            localStorage.setItem('cart', JSON.stringify(localCart));
+          }
+    updateQuantity (currentProduct.id, currentProduct.quantity);
+
+    
+        /*
+    
+           let value = event.target.value;
+         //let test = (currentProduct.quantity = quantitéSelector.value);
+        
+        const cartProduct = localCart.find ((element) =>
+        element.id)
+
+        cartProduct.quantity = value;
+        localStorage.setItem('cart', JSON.stringify(localCart));
+        
+         */
+      
+         
+       } )
+
+
+        
+
+        
+      
   
-  localStorage.setItem('id', unCanape._id);
+    
+
   
-  if(localStorage.getItem('id')){
-    panierLocalStorage.push(unCanape._id);
-  };
 
-  //---------------------------------
-
-  localStorage.setItem('couleur', (couleursSelector).value);
-  
-  if(localStorage.getItem('couleur')){
-    panierLocalStorage.push((couleursSelector).value);
-  };
-
-  //-----------------------------------
-
-  let quantitéSelector = document.querySelector('#quantity');
-  
-  localStorage.setItem('quantité', (quantitéSelector).value);
-  
-  if(localStorage.getItem('quantité')){
-    panierLocalStorage.push((quantitéSelector).value);
-  };
+    
 
 
+ /*
 
-localStorage.setItem('addtocart', JSON.stringify(panierLocalStorage)); //stringify object and store
-var retrievedPerson = JSON.parse(localStorage.getItem('addtocart')); //retrieve the object
+    if(localCart == null){
+      localCart = [];
+      localCart.push(currentProduct);
+      console.log(localCart);
+      localStorage.setItem('cart', JSON.stringify(localCart));
+    } 
 
-  //console.log(panierLocalStorage);
+    
 
+    else (localCart != null)
+    {
+
+      localCart.push(currentProduct);
+      console.log(localCart);
+      localStorage.setItem('cart', JSON.stringify(localCart));
+
+      if(currentProduct.quantity != currentProduct.quantity){
+        console.log('hello');
+      }
+    }
+      
   */
-});
 
 
-//--------------------------------------------------- 
+        })
+       }
+
+      
+
+  
 
 
+addBasket(); 
+  
+ })
+.catch(function(err) {
+  // Une erreur est survenue
+  });
 
 
+     
 
-})
-  .catch(function(err) {
-    // Une erreur est survenue
-    });
+   
+
+    
+    
+    
+    
+
+

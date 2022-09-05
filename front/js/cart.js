@@ -1,7 +1,10 @@
-// FAIRE UN FETCH AVEC L'id du local storage !
 
 
-let ajoutAuPanier = JSON.parse(localStorage.getItem('addtocart')); 
+
+
+let ajoutAuPanier = JSON.parse(localStorage.getItem('cart')); 
+
+console.log(ajoutAuPanier)
 
 let idPanier = ajoutAuPanier;
 let ID = idPanier[0];
@@ -50,3 +53,4 @@ affichagePanier += `<article class="cart__item" data-id="${produit._id}" data-co
               itemsPanier.innerHTML = affichagePanier;
 
 });
+
