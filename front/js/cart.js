@@ -1,18 +1,107 @@
 
-// Recuperation du localCart dans le local storage
-
-let ajoutAuPanier = JSON.parse(window.localStorage.getItem('cart')); 
+// Recuperation du local storage
 
 
 
- console.log(ajoutAuPanier)
 
+
+
+let ajoutAuPanier = JSON.parse(localStorage.getItem('cart')); 
+
+console.log(ajoutAuPanier)
+
+
+ // fetch
+
+ for (let produit in ajoutAuPanier) {
+  fetch('http://localhost:3000/api/products/' + ajoutAuPanier[produit].id)
+  .then((res) => {
+  return res.json();
+  })
+.then(async function (api_result) {
+  article = await api_result;
+  
+  console.log(article)
+  if (article) {
+
+
+// Ajout au DOM
+ 
+  let cartDisplay = document.querySelector('#cart__items');
+  cartDisplay.innerHTML += 
+  ` <article class="cart__item" data-id="${api_result._id}" data-color="${ajoutAuPanier[produit].color}">
+    <div class="cart__item__img">
+      <img src="${api_result.imageUrl}" alt="Photographie d'un canapé">
+    </div>
+    <div class="cart__item__content">
+      <div class="cart__item__content__description">
+        <h2>${api_result.name}</h2>
+        <p>${ajoutAuPanier[produit].color}</p>
+        <p>${api_result.price} €</p>
+      </div>
+      <div class="cart__item__content__settings">
+        <div class="cart__item__content__settings__quantity">
+          <p>Qté : ${ajoutAuPanier[produit].quantity} </p>
+          <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="42">
+        </div>
+        <div class="cart__item__content__settings__delete">
+          <p class="deleteItem">Supprimer</p>
+        </div>
+      </div>
+    </div>
+  </article>
+  </section>`
+  }
+
+  // Changement de la quantiter dans le panier 
+
+let settingQuantity = document.querySelector('.cart__item__content__settings__quantity');
+console.log(settingQuantity);
+
+let settingQuantityP = document.querySelector('.cart__item__content__settings__quantity p');
+console.log(settingQuantityP);
+
+let settingQuantityValue = document.querySelector('.itemQuantity');
+console.log(settingQuantityValue.value);
+
+
+
+settingQuantityP.addEventListener('change', (event) =>  {
+
+    function updateQuantity () {
+
+      for (let produit of ajoutAuPanier) {
+        if (settingQuantityP !== settingQuantityValue){
+          ajoutAuPanier[produit].quantity = quantitéSelector.value;
+        }
+      }
+      localStorage.setItem('cart', JSON.stringify(ajoutAuPanier));
+    }
+
+  })
+
+
+  
+
+
+
+
+  })
+
+
+
+  .catch((error) => {
+  console.log(error);
+  });
+}
+  
+
+  /*
 
  // Creation du display pour ajouter les produtis
 
   if (ajoutAuPanier) {
-    
-    console.log(ajoutAuPanier)
+  
 
     let cartDisplay = document.querySelector('#cart__items');
 
@@ -40,46 +129,20 @@ let ajoutAuPanier = JSON.parse(window.localStorage.getItem('cart'));
       </div>
     </div>
   </article>
-  </section>
-            <div class="cart__price">
-              <p>Total (<span id="totalQuantity"><!-- 2 --></span> articles) : <span id="totalPrice"><!-- 84,00 --></span> €</p>
-            </div>
-            <div class="cart__order">
-              <form method="get" class="cart__order__form">
-                <div class="cart__order__form__question">
-                  <label for="firstName">Prénom: </label>
-                  <input type="text" name="firstName" id="firstName" required>
-                  <p id="firstNameErrorMsg"><!-- ci est un message d'erreur --></p>
-                </div>
-                <div class="cart__order__form__question">
-                  <label for="lastName">Nom: </label>
-                  <input type="text" name="lastName" id="lastName" required>
-                  <p id="lastNameErrorMsg"></p>
-                </div>
-                <div class="cart__order__form__question">
-                  <label for="address">Adresse: </label>
-                  <input type="text" name="address" id="address" required>
-                  <p id="addressErrorMsg"></p>
-                </div>
-                <div class="cart__order__form__question">
-                  <label for="city">Ville: </label>
-                  <input type="text" name="city" id="city" required>
-                  <p id="cityErrorMsg"></p>
-                </div>
-                <div class="cart__order__form__question">
-                  <label for="email">Email: </label>
-                  <input type="email" name="email" id="email" required>
-                  <p id="emailErrorMsg"></p>
-                </div>
-                <div class="cart__order__form__submit">
-                  <input type="submit" value="Commander !" id="order">
-                </div>
-              </form>
-            </div>
-          </section>`)
+  </section>`)
 
          
   }
+
+
+
+
+*/
+
+
+
+
+  /*
 
 //Recuperation de l'id de chaque produits
   
@@ -92,67 +155,42 @@ recupId.forEach(e => {
   }
   ); 
 
-  
-/*
-
-const panierDisplay = async () => {
-  console.log('salut');
-  if (ajoutAuPanier) {
-    await ajoutAuPanier;
-    console.log(ajoutAuPanier) 
-  } 
-} */
-
-/*
-
-let idPanier = ajoutAuPanier;
-let ID = ajoutAuPanier.lo;
-
-console.log(ID);
-
-console.log(ID); // Ceci m'affiche l'id du produit je dois donc trouver le moyen de rajouter cet id dans l'url fetch 
+  let theID = document.querySelectorAll('.cart__item data-id');
+  console.log(theID);
 
 
-fetch('http://localhost:3000/api/products' + '/' + ID)
-.then((response) => {
-  if (response.ok) {
-    return response.json();
-  }
-})
-.then((canapes) => {
-  console.log(canapes);
-
-  let produit = canapes;
 
 
-let itemsPanier = document.querySelector('#cart__items');
+  const URL = fetch('http://localhost:3000/api/products/');
+console.log(URL);
 
-let affichagePanier ="";
+const urlParams = new URLSearchParams(URL);
 
-affichagePanier += `<article class="cart__item" data-id="${produit._id}" data-color="${produit.colors}">
-                <div class="cart__item__img">
-                  <img src="${produit.imageUrl}">
-                </div>
-                <div class="cart__item__content">
-                  <div class="cart__item__content__description">
-                    <h2>${produit.name}</h2>
-                    <p>${ajoutAuPanier.color}</p>
-                    <p>${produit.price}€</p>
-                  </div>
-                  <div class="cart__item__content__settings">
-                    <div class="cart__item__content__settings__quantity">
-                      <p>Qté : "${ajoutAuPanier}"</p>
-                      <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="42">
-                    </div>
-                    <div class="cart__item__content__settings__delete">
-                      <p class="deleteItem">Supprimer</p>
-                    </div>
-                  </div>
-                </div>
-              </article>`
+const idDuProduit = urlParams.get('.cart__item');
+console.log(idDuProduit);
 
-              itemsPanier.innerHTML = affichagePanier;
+let leId = idDuProduit;
 
-});
+
+// Changement de la quantiter dans le panier 
+
+let settingQuantity = document.querySelector('.cart__item__content__settings__quantity');
+console.log(settingQuantity);
+
+let settingQuantityP = document.querySelector('.cart__item__content__settings__quantity p');
+console.log(settingQuantityP);
+
+let settingQuantityValue = document.querySelector('.itemQuantity');
+console.log(settingQuantityValue.value);
+
+
+// Suppression de produit du panier
+
+function removeStorage() {
+ 
+
+
+  sessionStorage.removeItem('image');
+}
 
 */
