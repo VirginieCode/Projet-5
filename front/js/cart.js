@@ -13,35 +13,37 @@ console.log(ajoutAuPanier)
 
  // fetch
 
- for (let produit in ajoutAuPanier) {
-  fetch('http://localhost:3000/api/products/' + ajoutAuPanier[produit].id)
+ for (produit of ajoutAuPanier) {
+ 
+  fetch('http://localhost:3000/api/products/' + produit.id)
   .then((res) => {
   return res.json();
   })
 .then(async function (api_result) {
   article = await api_result;
-  
-  console.log(article)
+
+
+
   if (article) {
 
-
+    console.log(produit)
 // Ajout au DOM
  
   let cartDisplay = document.querySelector('#cart__items');
   cartDisplay.innerHTML += 
-  ` <article class="cart__item" data-id="${api_result._id}" data-color="${ajoutAuPanier[produit].color}">
+  ` <article class="cart__item" data-id="${api_result._id}" data-color="${produit.color}">
     <div class="cart__item__img">
       <img src="${api_result.imageUrl}" alt="Photographie d'un canapé">
     </div>
     <div class="cart__item__content">
       <div class="cart__item__content__description">
         <h2>${api_result.name}</h2>
-        <p>${ajoutAuPanier[produit].color}</p>
+        <p>${produit.color}</p>
         <p>${api_result.price} €</p>
       </div>
       <div class="cart__item__content__settings">
         <div class="cart__item__content__settings__quantity">
-          <p>Qté : ${ajoutAuPanier[produit].quantity} </p>
+          <p>Qté : ${produit.quantity} </p>
           <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="42">
         </div>
         <div class="cart__item__content__settings__delete">
@@ -56,28 +58,28 @@ console.log(ajoutAuPanier)
   // Changement de la quantiter dans le panier 
 
 let settingQuantity = document.querySelector('.cart__item__content__settings__quantity');
-console.log(settingQuantity);
+//console.log(settingQuantity);
 
 let settingQuantityP = document.querySelector('.cart__item__content__settings__quantity p');
-console.log(settingQuantityP);
+//console.log(settingQuantityP);
 
 let settingQuantityValue = document.querySelector('.itemQuantity');
-console.log(settingQuantityValue.value);
+//console.log(settingQuantityValue.value);
 
+//console.log(produit.quantity)
 
-
-settingQuantityP.addEventListener('change', (event) =>  {
+settingQuantityValue.addEventListener('change', (event) =>  {
 
     function updateQuantity () {
 
-      for (let produit of ajoutAuPanier) {
-        if (settingQuantityP !== settingQuantityValue){
-          ajoutAuPanier[produit].quantity = quantitéSelector.value;
+      for (let product of ajoutAuPanier) {
+        if (product.quantity !== settingQuantityValue){
+          produit.quantity = quantitéSelector.value;
         }
       }
       localStorage.setItem('cart', JSON.stringify(ajoutAuPanier));
     }
-
+updateQuantity()
   })
 
 
