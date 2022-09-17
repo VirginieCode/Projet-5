@@ -1,9 +1,156 @@
 
+
 // Recuperation du local storage
 
+function createProductLine(localProduct, apiProduct) {
+  return ` <article class="cart__item" data-id="${apiProduct._id}" data-color="${localProduct.color}">
+<div class="cart__item__img">
+  <img src="${apiProduct.imageUrl}" alt="Photographie d'un canapé">
+</div>
+<div class="cart__item__content">
+  <div class="cart__item__content__description">
+    <h2>${apiProduct.name}</h2>
+    <p>${localProduct.color}</p>
+    <p>${apiProduct.price} €</p>
+  </div>
+  <div class="cart__item__content__settings">
+    <div class="cart__item__content__settings__quantity">
+      <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${localProduct.quantity}">
+    </div>
+    <div class="cart__item__content__settings__delete">
+      <p class="deleteItem">Supprimer</p>
+    </div>
+  </div>
+</div>
+</article>
+</section>`;
+}
+
+function qtyChange() {
+  // Je boucle sur chaque item du DOM pour y ajouter un eventListener
+  let quantitySelectors = document.querySelectorAll(".itemQuantity");
+  quantitySelectors.forEach((quantityInput) => {
+    quantityInput.addEventListener("change", (event) => {
+      if (event.target.value < 1 || event.target.value > 100) {
+        alert("Veuillez choisir entre 1 et 100 articles");
+      } else {
+        //Faire les modifications ici
+     
+        
+
+
+        const currentItem = event.target.closest('article');
+       
+        const currentItemId = currentItem.dataset.id;
+       
+        const currentItemColor = currentItem.dataset.color;
+
+        
+        const newCartLocal = JSON.parse(localStorage.getItem('cart'));
+       
+          for (let product of newCartLocal) {
+            if (product.id == currentItemId && product.color == currentItemColor){
+              product.quantity = event.target.value;
+            }
+          }
+    console.log(newCartLocal)
+   localStorage.setItem('cart', JSON.stringify(newCartLocal));
+    
+
+      
+
+  }
+      
+        loadProducts();
+      })
+    });
+  };
+
+
+function removeClick() {
+  // Je boucle sur chaque item du DOM pour y ajouter un eventListener
+  const removeButtons = document.querySelectorAll(".deleteItem");
+  removeButtons.forEach((removeButton) => {
+    removeButton.addEventListener("click", (event) => {
+      // quand je click, je récupére dans le dom l'article le plus proche du button
+      const currentItem = event.target.closest('article');
+      // et je récupère la valeur du "data-id" (faire pareil pour color)
+      const currentItemId = currentItem.dataset.id;
+      console.log(currentItem)
+     
+      //Faire la suppression ici
+      alert('FAKE DELETE of product with ID : '+ currentItemId+'  - Product list will reload right now');
+      const currentItemColor = currentItem.dataset.color;
+      
+      
+const cart = JSON.parse(localStorage.getItem('cart'));
+const productPosition = cart.findIndex(item => item.id == currentItemId && item.color == currentItemColor);
+
+console.log(productPosition)
+cart.splice(productPosition, 1);
+console.log(cart)
+localStorage.setItem('cart', JSON.stringify(cart));
+
+      
+     
+  
+      loadProducts();
+    });
+  });
+}
+
+// calcul quantité totale 
+
+function totalQuantity(){
+
+  
+}
 
 
 
+
+
+// Cette fonction est a appeler au changement de la page & à chaque modif (change qty + delete)
+async function loadProducts() {
+  
+  let cart = JSON.parse(localStorage.getItem("cart"));
+  // le hmtl des produits est initialisé
+  let htmlProducts = "";
+  let totalPrice = 0;
+  let totalQuantity = 0;
+  // pour chaque produit dans le localstorage
+  for (localProduct of cart) {
+    // je vais chercher le produit dans le back
+    await fetch("http://localhost:3000/api/products/" + localProduct.id)
+      // converti en json
+      .then((res) => res.json())
+      .then((apiProduct) => {
+        // je stocke dans hmltProduct le HTML généré par la function createProductLine
+        htmlProducts += createProductLine(localProduct, apiProduct);
+        totalPrice = totalPrice + apiProduct.price*localProduct.quantity;
+        totalQuantity = totalQuantity + parseInt(localProduct.quantity);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+  // une fois que la boucle est terminée, et que tous les produits sont dans ma variable, je les afffiche
+  // dans le DOM
+  let cartDisplay = document.querySelector("#cart__items");
+  cartDisplay.innerHTML = htmlProducts;
+  console.log(totalPrice);
+  console.log(totalQuantity);
+  // j'appelle les event listener une fois que les éléments sont dans le DOM
+  qtyChange();
+  removeClick();
+}
+
+loadProducts();
+
+
+
+/*
+// Recuperation du local storage
 
 
 let ajoutAuPanier = JSON.parse(localStorage.getItem('cart')); 
