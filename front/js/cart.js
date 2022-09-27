@@ -1,7 +1,5 @@
 // Recuperation du local storage
 
-
-
 function createProductLine(localProduct, apiProduct) {
   return ` <article class="cart__item" data-id="${apiProduct._id}" data-color="${localProduct.color}">
 <div class="cart__item__img">
@@ -124,11 +122,9 @@ async function loadProducts() {
         totalQuantity = totalQuantity + parseInt(localProduct.quantity);
 
         // Création du tableau de produit
-      
+
         let ProductArray = [localProduct];
         console.log(ProductArray);
-
-
       })
       .catch((error) => {
         console.log(error);
@@ -247,48 +243,49 @@ form.addEventListener("submit", (event) => {
   nomValidation();
   villeValidation();
 
-  //Création de l'objet user Infos
+  //Création de l'objet user
 
   let produitsLocal = JSON.parse(localStorage.getItem("cart"));
-
-  console.log(produitsLocal)
 
   const user = {
     firstName: firstNameInput,
     lastName: lastNameInput,
-    Address: addressInput,
+    address: addressInput,
     city: cityInput,
     email: emailInput,
-    };
-
-  const products = [produitsLocal];
- 
-  const UserInfos = {
-
-    user, products
-    
   };
 
-  // Requette fetch pour obtenir le numero de commande
+  //Création de l'objet product
+
+  let products = [];
+
+  for (let i = 0; i < produitsLocal.length; i++) {
+    products.push(produitsLocal[i].products);
+  }
   
-  const options =  {
+    //Création de l'objet userInfosOrder
 
-  method : 'POST',
-  headers : {
-    'Content-Type' : 'application/json'
-  },
-  body : JSON.stringify(UserInfos)
-}
+  const UserInfosOrder = {
+    user,
+    products,
+  };
 
-    
-    fetch ('http://localhost:3000/api/products/order', options) 
-    .then(response => response.json())
-    .then(data =>{
-      localStorage.setItem("order-ID", JSON.stringify(data));
+  console.log(UserInfosOrder);
+  // Requette fetch pour obtenir le numero de commande
+
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(UserInfosOrder),
+  };
+
+  fetch("http://localhost:3000/api/products/order", options)
+    .then((response) => response.json())
+    .then((data) => {
+      
+      localStorage.setItem("orderId", data.orderId);
       alert(data.message);
-
-    })
-
+    });
 });
-
-
