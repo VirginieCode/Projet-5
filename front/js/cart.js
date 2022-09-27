@@ -1,6 +1,6 @@
-
-
 // Recuperation du local storage
+
+
 
 function createProductLine(localProduct, apiProduct) {
   return ` <article class="cart__item" data-id="${apiProduct._id}" data-color="${localProduct.color}">
@@ -26,6 +26,8 @@ function createProductLine(localProduct, apiProduct) {
 </section>`;
 }
 
+// Création de la fonction pour le changement de quantiter dans le panier
+
 function qtyChange() {
   // Je boucle sur chaque item du DOM pour y ajouter un eventListener
   let quantitySelectors = document.querySelectorAll(".itemQuantity");
@@ -35,37 +37,33 @@ function qtyChange() {
         alert("Veuillez choisir entre 1 et 100 articles");
       } else {
         //Faire les modifications ici
-     
-        
 
+        const currentItem = event.target.closest("article");
 
-        const currentItem = event.target.closest('article');
-       
         const currentItemId = currentItem.dataset.id;
-       
+
         const currentItemColor = currentItem.dataset.color;
 
-        
-        const newCartLocal = JSON.parse(localStorage.getItem('cart'));
-       
-          for (let product of newCartLocal) {
-            if (product.id == currentItemId && product.color == currentItemColor){
-              product.quantity = event.target.value;
-            }
+        const newCartLocal = JSON.parse(localStorage.getItem("cart"));
+
+        for (let product of newCartLocal) {
+          if (
+            product.id == currentItemId &&
+            product.color == currentItemColor
+          ) {
+            product.quantity = event.target.value;
           }
-    console.log(newCartLocal)
-   localStorage.setItem('cart', JSON.stringify(newCartLocal));
-    
+        }
+        console.log(newCartLocal);
+        localStorage.setItem("cart", JSON.stringify(newCartLocal));
+      }
 
-      
-
-  }
-      
-        loadProducts();
-      })
+      loadProducts();
     });
-  };
+  });
+}
 
+// Création de la fonction pour supprimer un produit de panier
 
 function removeClick() {
   // Je boucle sur chaque item du DOM pour y ajouter un eventListener
@@ -73,71 +71,83 @@ function removeClick() {
   removeButtons.forEach((removeButton) => {
     removeButton.addEventListener("click", (event) => {
       // quand je click, je récupére dans le dom l'article le plus proche du button
-      const currentItem = event.target.closest('article');
+      const currentItem = event.target.closest("article");
       // et je récupère la valeur du "data-id" (faire pareil pour color)
       const currentItemId = currentItem.dataset.id;
-      console.log(currentItem)
-     
+      console.log(currentItem);
+
       //Faire la suppression ici
-      alert('FAKE DELETE of product with ID : '+ currentItemId+'  - Product list will reload right now');
+      alert(
+        "FAKE DELETE of product with ID : " +
+          currentItemId +
+          "  - Product list will reload right now"
+      );
       const currentItemColor = currentItem.dataset.color;
-      
-      
-const cart = JSON.parse(localStorage.getItem('cart'));
-const productPosition = cart.findIndex(item => item.id == currentItemId && item.color == currentItemColor);
 
-console.log(productPosition)
-cart.splice(productPosition, 1);
-console.log(cart)
-localStorage.setItem('cart', JSON.stringify(cart));
+      const cart = JSON.parse(localStorage.getItem("cart"));
+      const productPosition = cart.findIndex(
+        (item) => item.id == currentItemId && item.color == currentItemColor
+      );
 
-      
-     
-  
+      console.log(productPosition);
+      cart.splice(productPosition, 1);
+      console.log(cart);
+      localStorage.setItem("cart", JSON.stringify(cart));
+
       loadProducts();
     });
   });
 }
 
-// calcul quantité totale 
-
-function totalQuantity(){
-
-  
-}
-
-
-
-
+// Création de la fonction du chargement de la page
 
 // Cette fonction est a appeler au changement de la page & à chaque modif (change qty + delete)
 async function loadProducts() {
-  
   let cart = JSON.parse(localStorage.getItem("cart"));
   // le hmtl des produits est initialisé
   let htmlProducts = "";
+  let cartEmpty = `Votre panier est vide`;
   let totalPrice = 0;
   let totalQuantity = 0;
   // pour chaque produit dans le localstorage
   for (localProduct of cart) {
     // je vais chercher le produit dans le back
+
     await fetch("http://localhost:3000/api/products/" + localProduct.id)
       // converti en json
       .then((res) => res.json())
       .then((apiProduct) => {
         // je stocke dans hmltProduct le HTML généré par la function createProductLine
+
         htmlProducts += createProductLine(localProduct, apiProduct);
-        totalPrice = totalPrice + apiProduct.price*localProduct.quantity;
+        totalPrice = totalPrice + apiProduct.price * localProduct.quantity;
         totalQuantity = totalQuantity + parseInt(localProduct.quantity);
+
+        // Création du tableau de produit
+      
+        let ProductArray = [localProduct];
+        console.log(ProductArray);
+
+
       })
       .catch((error) => {
         console.log(error);
       });
   }
+
+  if (totalPrice === 0) {
+    htmlProducts += `<div class='center'>Votre panier est vide</div>`;
+  }
+
   // une fois que la boucle est terminée, et que tous les produits sont dans ma variable, je les afffiche
   // dans le DOM
   let cartDisplay = document.querySelector("#cart__items");
+  let totalQuantityDom = document.querySelector("#totalQuantity");
+  totalQuantityDom.innerHTML = totalQuantity;
+  let totalPriceDom = document.querySelector("#totalPrice");
+  totalPriceDom.innerHTML = totalPrice;
   cartDisplay.innerHTML = htmlProducts;
+
   console.log(totalPrice);
   console.log(totalQuantity);
   // j'appelle les event listener une fois que les éléments sont dans le DOM
@@ -147,199 +157,134 @@ async function loadProducts() {
 
 loadProducts();
 
+// Le Formulaire
 
+// Création des querySelector
 
-/*
-// Recuperation du local storage
+// Création de l'événement click sur le boutton commander
 
+const orderButton = document.querySelector("#order");
+const form = document.querySelector(".cart__order__form");
+const formSubmit = document.querySelector(".cart__order__form__submit");
 
-let ajoutAuPanier = JSON.parse(localStorage.getItem('cart')); 
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
 
-console.log(ajoutAuPanier)
+  // Création des querySelector
+  const firstNameInput = document.querySelector("#firstName").value;
+  const lastNameInput = document.querySelector("#lastName").value;
+  const addressInput = document.querySelector("#address");
+  const cityInput = document.querySelector("#city").value;
+  const emailInput = document.querySelector("#email").value;
 
+  const firstNameErrorMsg = document.querySelector("#firstNameErrorMsg");
+  const lastNameErrorMsg = document.querySelector("#lastNameErrorMsg");
+  const addressErrorMsg = document.querySelector("#addressErrorMsg");
+  const cityErrorMsg = document.querySelector("#cityErrorMsg");
+  const emailErrorMsgDisplay = document.querySelector("#emailErrorMsg");
 
- // fetch
+  // Declaration de regex
 
- for (produit of ajoutAuPanier) {
- 
-  fetch('http://localhost:3000/api/products/' + produit.id)
-  .then((res) => {
-  return res.json();
-  })
-.then(async function (api_result) {
-  article = await api_result;
+  const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+  const regexPrenomETnom = /^.{2,}$/;
+  const regexVille = /^.{1,}$/;
 
+  // Declaration des fonction pour le test de regex
 
+  function emailValidation() {
+    if (regexEmail.test(emailInput)) {
+      console.log("Bon email");
 
-  if (article) {
+      emailErrorMsg.innerHTML = "";
+    } else {
+      console.log("Mauvais email");
 
-    console.log(produit)
-// Ajout au DOM
- 
-  let cartDisplay = document.querySelector('#cart__items');
-  cartDisplay.innerHTML += 
-  ` <article class="cart__item" data-id="${api_result._id}" data-color="${produit.color}">
-    <div class="cart__item__img">
-      <img src="${api_result.imageUrl}" alt="Photographie d'un canapé">
-    </div>
-    <div class="cart__item__content">
-      <div class="cart__item__content__description">
-        <h2>${api_result.name}</h2>
-        <p>${produit.color}</p>
-        <p>${api_result.price} €</p>
-      </div>
-      <div class="cart__item__content__settings">
-        <div class="cart__item__content__settings__quantity">
-          <p>Qté : ${produit.quantity} </p>
-          <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="42">
-        </div>
-        <div class="cart__item__content__settings__delete">
-          <p class="deleteItem">Supprimer</p>
-        </div>
-      </div>
-    </div>
-  </article>
-  </section>`
-  }
-
-  // Changement de la quantiter dans le panier 
-
-let settingQuantity = document.querySelector('.cart__item__content__settings__quantity');
-//console.log(settingQuantity);
-
-let settingQuantityP = document.querySelector('.cart__item__content__settings__quantity p');
-//console.log(settingQuantityP);
-
-let settingQuantityValue = document.querySelector('.itemQuantity');
-//console.log(settingQuantityValue.value);
-
-//console.log(produit.quantity)
-
-settingQuantityValue.addEventListener('change', (event) =>  {
-
-    function updateQuantity () {
-
-      for (let product of ajoutAuPanier) {
-        if (product.quantity !== settingQuantityValue){
-          produit.quantity = quantitéSelector.value;
-        }
-      }
-      localStorage.setItem('cart', JSON.stringify(ajoutAuPanier));
+      let message = `Adresse email non valide`;
+      emailErrorMsg.innerHTML = message;
     }
-updateQuantity()
-  })
-
-
-  
-
-
-
-
-  })
-
-
-
-  .catch((error) => {
-  console.log(error);
-  });
-}
-  
-
-  /*
-
- // Creation du display pour ajouter les produtis
-
-  if (ajoutAuPanier) {
-  
-
-    let cartDisplay = document.querySelector('#cart__items');
-
-    console.log(cartDisplay);
-
-    cartDisplay.innerHTML = ajoutAuPanier.map((cart) => 
-    ` <article class="cart__item" data-id="${cart.id}" data-color="${cart.color}">
-    <div class="cart__item__img">
-      <img src="../images/product01.jpg" alt="Photographie d'un canapé">
-    </div>
-    <div class="cart__item__content">
-      <div class="cart__item__content__description">
-        <h2>Nom du produit</h2>
-        <p>${cart.color}</p>
-        <p>42,00 €</p>
-      </div>
-      <div class="cart__item__content__settings">
-        <div class="cart__item__content__settings__quantity">
-          <p>Qté : ${cart.quantity} </p>
-          <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="42">
-        </div>
-        <div class="cart__item__content__settings__delete">
-          <p class="deleteItem">Supprimer</p>
-        </div>
-      </div>
-    </div>
-  </article>
-  </section>`)
-
-         
   }
 
+  function PrenomValidation() {
+    if (regexPrenomETnom.test(firstNameInput)) {
+      console.log("Prenom valide");
 
+      firstNameErrorMsg.innerHTML = "";
+    } else {
+      console.log("Prenom non valide");
 
-
-*/
-
-
-
-
-  /*
-
-//Recuperation de l'id de chaque produits
-  
-  let recupId = document.querySelectorAll('.cart__item');
-
-
-
-recupId.forEach(e => {
-    console.log(e.dataset.id);
+      let message = `2 caractères minimum`;
+      firstNameErrorMsg.innerHTML = message;
+    }
   }
-  ); 
 
-  let theID = document.querySelectorAll('.cart__item data-id');
-  console.log(theID);
+  function nomValidation() {
+    if (regexPrenomETnom.test(lastNameInput)) {
+      console.log("nom valide");
 
+      lastNameErrorMsg.innerHTML = "";
+    } else {
+      console.log("nom non valide");
 
+      let message = `2 caractères minimum`;
+      lastNameErrorMsg.innerHTML = message;
+    }
+  }
 
+  function villeValidation() {
+    if (regexVille.test(cityInput)) {
+      console.log("Ville valide");
 
-  const URL = fetch('http://localhost:3000/api/products/');
-console.log(URL);
+      cityErrorMsg.innerHTML = "";
+    } else {
+      console.log("Ville non valide");
 
-const urlParams = new URLSearchParams(URL);
+      let message = `1 caractères minimum`;
+      cityErrorMsg.innerHTML = message;
+    }
+  }
+  emailValidation();
+  PrenomValidation();
+  nomValidation();
+  villeValidation();
 
-const idDuProduit = urlParams.get('.cart__item');
-console.log(idDuProduit);
+  //Création de l'objet user Infos
 
-let leId = idDuProduit;
+  let produitsLocal = JSON.parse(localStorage.getItem("cart"));
 
-
-// Changement de la quantiter dans le panier 
-
-let settingQuantity = document.querySelector('.cart__item__content__settings__quantity');
-console.log(settingQuantity);
-
-let settingQuantityP = document.querySelector('.cart__item__content__settings__quantity p');
-console.log(settingQuantityP);
-
-let settingQuantityValue = document.querySelector('.itemQuantity');
-console.log(settingQuantityValue.value);
-
-
-// Suppression de produit du panier
-
-function removeStorage() {
+  console.log(produitsLocal)
  
+  const UserInfos = {
 
+    user : {
+    Prenom: firstNameInput,
+    Nom: lastNameInput,
+    Adresse: addressInput,
+    Ville: cityInput,
+    Email: emailInput,
+    },
+    Products : produitsLocal
+  }
 
-  sessionStorage.removeItem('image');
+  // Requette fetch pour obtenir le numero de commande
+  
+  const options =  {
+
+  method : 'POST',
+  headers : {
+    'Content-Type' : 'application/json'
+  },
+  body : JSON.stringify(UserInfos)
 }
 
-*/
+    
+    fetch ('http://localhost:3000/api/products/order', options) 
+    .then(response => response.json())
+    .then(data =>{
+      localStorage.setItem('idOrder', data.orderId);
+      alert(data.message);
+
+    })
+
+});
+
+
