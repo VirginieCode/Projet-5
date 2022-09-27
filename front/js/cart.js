@@ -252,18 +252,22 @@ form.addEventListener("submit", (event) => {
   let produitsLocal = JSON.parse(localStorage.getItem("cart"));
 
   console.log(produitsLocal)
+
+  const user = {
+    firstName: firstNameInput,
+    lastName: lastNameInput,
+    Address: addressInput,
+    city: cityInput,
+    email: emailInput,
+    };
+
+  const products = [produitsLocal];
  
   const UserInfos = {
 
-    user : {
-    Prenom: firstNameInput,
-    Nom: lastNameInput,
-    Adresse: addressInput,
-    Ville: cityInput,
-    Email: emailInput,
-    },
-    Products : produitsLocal
-  }
+    user, products
+    
+  };
 
   // Requette fetch pour obtenir le numero de commande
   
@@ -280,7 +284,7 @@ form.addEventListener("submit", (event) => {
     fetch ('http://localhost:3000/api/products/order', options) 
     .then(response => response.json())
     .then(data =>{
-      localStorage.setItem('idOrder', data.orderId);
+      localStorage.setItem("order-ID", JSON.stringify(data));
       alert(data.message);
 
     })
