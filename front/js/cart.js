@@ -102,6 +102,7 @@ function removeClick() {
 // Cette fonction est a appeler au changement de la page & à chaque modif (change qty + delete)
 async function loadProducts() {
   let cart = JSON.parse(localStorage.getItem("cart"));
+  
   // le hmtl des produits est initialisé
   let htmlProducts = "";
   let cartEmpty = `Votre panier est vide`;
@@ -177,31 +178,36 @@ form.addEventListener("submit", (event) => {
   const lastNameErrorMsg = document.querySelector("#lastNameErrorMsg");
   const addressErrorMsg = document.querySelector("#addressErrorMsg");
   const cityErrorMsg = document.querySelector("#cityErrorMsg");
-  const emailErrorMsgDisplay = document.querySelector("#emailErrorMsg");
+  const emailErrorMsg = document.querySelector("#emailErrorMsg");
 
   // Declaration de regex
 
   const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-  const regexPrenomETnom = /^.{2,}$/;
+  const regexPrenom = /^.{2,}$/;
+  const regexNom = /^.{2,}$/;
+  const regexAddress = /^.{2,}$/;
   const regexVille = /^.{1,}$/;
 
   // Declaration des fonction pour le test de regex
 
+  let error = 0;
+
   function emailValidation() {
     if (regexEmail.test(emailInput)) {
       console.log("Bon email");
-
+      
       emailErrorMsg.innerHTML = "";
     } else {
       console.log("Mauvais email");
 
       let message = `Adresse email non valide`;
       emailErrorMsg.innerHTML = message;
+      error++;
     }
   }
 
   function PrenomValidation() {
-    if (regexPrenomETnom.test(firstNameInput)) {
+    if (regexPrenom.test(firstNameInput)) {
       console.log("Prenom valide");
 
       firstNameErrorMsg.innerHTML = "";
@@ -210,11 +216,12 @@ form.addEventListener("submit", (event) => {
 
       let message = `2 caractères minimum`;
       firstNameErrorMsg.innerHTML = message;
+      error++;
     }
   }
 
   function nomValidation() {
-    if (regexPrenomETnom.test(lastNameInput)) {
+    if (regexNom.test(lastNameInput)) {
       console.log("nom valide");
 
       lastNameErrorMsg.innerHTML = "";
@@ -223,6 +230,21 @@ form.addEventListener("submit", (event) => {
 
       let message = `2 caractères minimum`;
       lastNameErrorMsg.innerHTML = message;
+      error++;
+    }
+  }
+
+  function addressValidation() {
+    if (regexAddress.test(addressInput)) {
+      console.log("adresse valide");
+
+      addressErrorMsg.innerHTML = "";
+    } else {
+      console.log("adresse non valide");
+
+      let message = `2 caractères minimum`;
+      addressErrorMsg.innerHTML = message;
+      error++;
     }
   }
 
@@ -236,12 +258,15 @@ form.addEventListener("submit", (event) => {
 
       let message = `1 caractères minimum`;
       cityErrorMsg.innerHTML = message;
+      error++;
     }
   }
   emailValidation();
   PrenomValidation();
   nomValidation();
+  addressValidation();
   villeValidation();
+  
 
   //Création de l'objet user
 
@@ -260,14 +285,21 @@ form.addEventListener("submit", (event) => {
   let products = [];
 
   for (let i = 0; i < produitsLocal.length; i++) {
-    products.push(produitsLocal[i].products);
+
+
+    
+    products.push(produitsLocal[i].id);
+    
   }
   
+
+
+console.log(products)
     //Création de l'objet userInfosOrder
 
   const UserInfosOrder = {
-    user,
-    products,
+    contact : user,
+    products : products,
   };
 
   console.log(UserInfosOrder);
@@ -281,11 +313,20 @@ form.addEventListener("submit", (event) => {
     body: JSON.stringify(UserInfosOrder),
   };
 
-  fetch("http://localhost:3000/api/products/order", options)
+  if(error===0){
+
+    fetch("http://localhost:3000/api/products/order", options)
     .then((response) => response.json())
     .then((data) => {
       
-      localStorage.setItem("orderId", data.orderId);
-      alert(data.message);
+      console.log(data.orderId);
+      
+      window.location.href = `./confirmation.html?orderId=${data.orderId}`;
+      
     });
+  } else{
+    alert('Veuillez remplir tous les champs correctement');
+  }
+
+
 });
