@@ -34,8 +34,6 @@ function qtyChange() {
       if (event.target.value < 1 || event.target.value > 100) {
         alert("Veuillez choisir entre 1 et 100 articles");
       } else {
-        //Faire les modifications ici
-
         const currentItem = event.target.closest("article");
 
         const currentItemId = currentItem.dataset.id;
@@ -70,16 +68,11 @@ function removeClick() {
     removeButton.addEventListener("click", (event) => {
       // quand je click, je récupére dans le dom l'article le plus proche du button
       const currentItem = event.target.closest("article");
-      // et je récupère la valeur du "data-id" (faire pareil pour color)
+      // et je récupère la valeur du "data-id" 
       const currentItemId = currentItem.dataset.id;
       console.log(currentItem);
 
-      //Faire la suppression ici
-      alert(
-        "FAKE DELETE of product with ID : " +
-          currentItemId +
-          "  - Product list will reload right now"
-      );
+        // et je récupère la valeur du "data-color" 
       const currentItemColor = currentItem.dataset.color;
 
       const cart = JSON.parse(localStorage.getItem("cart"));
@@ -102,7 +95,7 @@ function removeClick() {
 // Cette fonction est a appeler au changement de la page & à chaque modif (change qty + delete)
 async function loadProducts() {
   let cart = JSON.parse(localStorage.getItem("cart"));
-  
+
   // le hmtl des produits est initialisé
   let htmlProducts = "";
   let cartEmpty = `Votre panier est vide`;
@@ -154,9 +147,6 @@ async function loadProducts() {
 
 loadProducts();
 
-// Le Formulaire
-
-// Création des querySelector
 
 // Création de l'événement click sur le boutton commander
 
@@ -170,7 +160,7 @@ form.addEventListener("submit", (event) => {
   // Création des querySelector
   const firstNameInput = document.querySelector("#firstName").value;
   const lastNameInput = document.querySelector("#lastName").value;
-  const addressInput = document.querySelector("#address");
+  const addressInput = document.querySelector("#address").value;
   const cityInput = document.querySelector("#city").value;
   const emailInput = document.querySelector("#email").value;
 
@@ -195,7 +185,7 @@ form.addEventListener("submit", (event) => {
   function emailValidation() {
     if (regexEmail.test(emailInput)) {
       console.log("Bon email");
-      
+
       emailErrorMsg.innerHTML = "";
     } else {
       console.log("Mauvais email");
@@ -235,6 +225,8 @@ form.addEventListener("submit", (event) => {
   }
 
   function addressValidation() {
+    console.log("adresse input");
+    console.log(addressInput);
     if (regexAddress.test(addressInput)) {
       console.log("adresse valide");
 
@@ -266,7 +258,6 @@ form.addEventListener("submit", (event) => {
   nomValidation();
   addressValidation();
   villeValidation();
-  
 
   //Création de l'objet user
 
@@ -285,21 +276,15 @@ form.addEventListener("submit", (event) => {
   let products = [];
 
   for (let i = 0; i < produitsLocal.length; i++) {
-
-
-    
     products.push(produitsLocal[i].id);
-    
   }
-  
 
-
-console.log(products)
-    //Création de l'objet userInfosOrder
+  console.log(products);
+  //Création de l'objet userInfosOrder
 
   const UserInfosOrder = {
-    contact : user,
-    products : products,
+    contact: user,
+    products: products,
   };
 
   console.log(UserInfosOrder);
@@ -313,20 +298,15 @@ console.log(products)
     body: JSON.stringify(UserInfosOrder),
   };
 
-  if(error===0){
-
+  if (error === 0) {
     fetch("http://localhost:3000/api/products/order", options)
-    .then((response) => response.json())
-    .then((data) => {
-      
-      console.log(data.orderId);
-      
-      window.location.href = `./confirmation.html?orderId=${data.orderId}`;
-      
-    });
-  } else{
-    alert('Veuillez remplir tous les champs correctement');
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data.orderId);
+
+        window.location.href = `./confirmation.html?orderId=${data.orderId}`;
+      });
+  } else {
+    alert("Veuillez remplir tous les champs correctement");
   }
-
-
 });
