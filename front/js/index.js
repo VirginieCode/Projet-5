@@ -12,12 +12,12 @@ function showCanape() {
       const items = document.querySelector("#items");
       let affichageCanapes = "";
 
-  // For pour recupérer tous les canapes
+      // For pour recupérer tous les canapes
       for (i = 0; i < canapes.length; i++) {
         let canape = canapes[i];
 
-  // Affichage des canapés dans le DOM 
-  
+        // Affichage des canapés dans le DOM
+
         affichageCanapes += `<a href="./product.html?id=${canape._id}">
 <article>
   <img src="${canape.imageUrl}" alt="Lorem ipsum dolor sit amet, Kanap name1">

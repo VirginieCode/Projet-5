@@ -68,11 +68,11 @@ function removeClick() {
     removeButton.addEventListener("click", (event) => {
       // quand je click, je récupére dans le dom l'article le plus proche du button
       const currentItem = event.target.closest("article");
-      // et je récupère la valeur du "data-id" 
+      // et je récupère la valeur du "data-id"
       const currentItemId = currentItem.dataset.id;
       console.log(currentItem);
 
-        // et je récupère la valeur du "data-color" 
+      // et je récupère la valeur du "data-color"
       const currentItemColor = currentItem.dataset.color;
 
       const cart = JSON.parse(localStorage.getItem("cart"));
@@ -146,7 +146,6 @@ async function loadProducts() {
 }
 
 loadProducts();
-
 
 // Création de l'événement click sur le boutton commander
 

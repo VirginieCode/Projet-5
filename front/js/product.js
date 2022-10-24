@@ -1,5 +1,4 @@
 function showOneCanape() {
-  
   // New URL PARAMS
 
   const URL = window.location.search;
@@ -95,9 +94,19 @@ function showOneCanape() {
               for (let product of localCart) {
                 if (
                   product.id == canape._id &&
-                  product.color == couleursSelector.value
+                  product.color == couleursSelector.value &&
+                  product.quantity == null
                 ) {
                   product.quantity = quantitéSelector.value;
+                }
+                if (
+                  product.id == canape._id &&
+                  product.color == couleursSelector.value &&
+                  product.quantity !== null
+                ) {
+                  product.quantity =
+                    parseInt(quantitéSelector.value) +
+                    parseInt(product.quantity);
                 }
               }
 
